@@ -1,11 +1,11 @@
-# travis.yml
+# .travis.yml
 
 language: node_js
 node_js:
   - "8.6.0"
-before_install:
-install:
-  - npm install
+# before_install:
+# install:
+#   - npm install
 cache:
   directories:
     - "node_modules"
