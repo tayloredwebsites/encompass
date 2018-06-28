@@ -10,9 +10,9 @@
  * MAIN GRUNT COMMANDS:
  * grunt - this builds the app and runs in 8080
  * grunt serve-test - this builds and runs the test server env in 8082
- * grunt tests - this runs all tests (run this in another tab after grunt serve-test)
- * grunt testEndToEnd - this runs the e2e (selenium) tests
- * grunt testApi - runs only the api (backend) tests
+ * grunt tests - this runs all tests (needs grunt serve-test)
+ * grunt endToEndTests - this runs the e2e tests (needs grunt serve-test)
+ * grunt apiTests - runs only the api (backend) tests (needs grunt serve-test)
  */
 
 
@@ -337,15 +337,6 @@ module.exports = function (grunt) {
           logConcurrentOutput: true
         }
       },
-      endToEndTasks: {
-        tasks: ['nodemon:dev', 'endToEndTests']
-      },
-      apiTasks: {
-        tasks: ['nodemon:dev', 'apiTests']
-      },
-      waitApiTasks: {
-        tasks: ['nodemon:dev', 'waitApiTests']
-      },
       test: {
         tasks: ['nodemon:dev', 'MochaTests', 'watch'],
         options: {
@@ -417,8 +408,6 @@ module.exports = function (grunt) {
   */
   grunt.registerTask('MochaTests', ['endToEndTests', 'apiTests']);
   grunt.registerTask('jqunit', ['qunit_junit', 'qunit']);
-  grunt.registerTask('endToEndTests', ['mochaTest:e2e']);
-  grunt.registerTask('apiTests', ['mochaTest:api']);
   grunt.registerTask('jasmineTests', ['jasmine']);
 
 
@@ -429,21 +418,19 @@ module.exports = function (grunt) {
       grunt dev   #terminal 2
   */
   grunt.registerTask('serve', ['nodemon:dev']);
-  grunt.registerTask('serve-debug', ['concurrent:debug-only']);
-  grunt.registerTask('dev', ['env:dev', 'build', 'MochaTests', 'watch']);
 
-  // Task for reseting the TestDB
+// Task for reseting the TestDB
   grunt.registerTask('resetTestDb', ['shell:restoreTestDb']);
 
-  // Tasks for creating test server, running all tests, or running indiviudal tests
-  grunt.registerTask('serve-test', ['env:test', 'resetTestDb', 'build-test', 'nodemon:dev']);
-  grunt.registerTask('tests', ['env:test', 'build-test', 'MochaTests']);
-  grunt.registerTask('testEndToEnd', ['env:test', 'resetTestDb', 'concurrent:endToEndTasks']);
-  grunt.registerTask('testApi', ['env:test', 'resetTestDb', 'concurrent:apiTasks']);
+  // Run test server (which locks up a console)
+  grunt.registerTask('serve-test', ['env:test', 'resetTestDb', 'build', 'nodemon:dev']);
 
+  // run tests against a currently running test server (grunt serve-test)
+  grunt.registerTask('tests', ['env:test', 'build-test', 'MochaTests']);
+  grunt.registerTask('endToEndTests', ['env:test', 'build-test', 'mochaTest:e2e']);
+  grunt.registerTask('apiTests', ['env:test', 'build-test', 'mochaTest:api']);
 
   // CURRENTLY NOT USED TASKS
   grunt.registerTask('sleep3', ['shell:sleep3']);
-  grunt.registerTask('testWaitApi', ['env:test', 'resetTestDb', 'concurrent:waitApiTasks']);
   grunt.registerTask('dist', ['test', 'uglify']);
 };
