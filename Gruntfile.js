@@ -406,7 +406,7 @@ module.exports = function (grunt) {
     - apiTests - runs the api MochaTest (backend mocha/chai tets)
     - jasmineTests - NEED TO BE REPLACED
   */
-  grunt.registerTask('MochaTests', ['endToEndTests', 'apiTests']);
+  grunt.registerTask('MochaTests', ['mochaTest:api', 'mochaTest:e2e']);
   grunt.registerTask('jqunit', ['qunit_junit', 'qunit']);
   grunt.registerTask('jasmineTests', ['jasmine']);
 
